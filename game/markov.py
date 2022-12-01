@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Oct 19 15:18:55 2021
-Markov Chain
-@author: Li Youcheng
-"""
 import random
 
 class news_flow():
