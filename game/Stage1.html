@@ -1,0 +1,50 @@
+{{ extends 'global/Page.html' }}
+{{ block title }}第<b>1</b>轮游戏{{ endblock }}
+
+{{ block content }}
+<p>
+</p>
+<p>
+    <b>今日新闻</b>
+<p>
+
+<p>
+    <b>{{player.news}}</b>
+<p>
+
+</p>
+<p>
+    您目前具有金钱<b>{{player.currency}}</b>
+</p>
+<table border="1">
+    <tr>
+        <th></th>
+        <th>商品A</th>
+        <th>商品B</th>
+        <th>商品C</th>
+    </tr>
+    <tr>
+        <td>持有数目</td>
+        <td>{{player.a_num}}</td>
+        <td>{{player.b_num}}</td>
+        <td>{{player.c_num}}</td>
+    </tr>
+    <tr>
+        <td>市场价格</td>
+        <td>{{group.a_price}}</td>
+        <td>{{group.b_price}}</td>
+        <td>{{group.c_price}}</td>
+    </tr>
+</table>
+<p>
+    请选择您在本轮次开始之前，出售商品的<b>种类</b>和<b>数目</b>。如果不出售某类商品，数目为<b>0</b>，价格任意填写。
+
+</p>
+<p>
+    {{if group.a_fusing > 0}} 本轮商品<b>A</b>熔断，终止交易。您可以在相应位置填写任意数字。{{endif}}
+    {{if group.b_fusing > 0}} 本轮商品<b>B</b>熔断，终止交易。您可以在相应位置填写任意数字。{{endif}}
+    {{if group.c_fusing > 0}} 本轮商品<b>C</b>熔断，终止交易。您可以在相应位置填写任意数字。{{endif}}
+</p>
+{{ formfields }}
+{{ next_button }}
+{{ endblock }}

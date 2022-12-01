@@ -1,0 +1,111 @@
+from otree.api import *
+import random
+import time
+
+doc = """
+Your app description
+"""
+
+c = cu
+
+
+class Constants(BaseConstants):
+    name_in_url = 'game'
+    players_per_group = 3  # 将玩家自动分为若干个三人小组
+    num_rounds = 1  # 重复轮数
+    endowment = cu(100)  # 每个玩家初始点数
+    multiplier = 1.8  # 团队贡献值
+
+
+class Subsession(BaseSubsession):
+    pass
+
+
+class Group(BaseGroup):
+    # 组内贡献值
+    total_contribution = models.CurrencyField()
+    # 返还给每位玩家的份额
+    individual_share = models.CurrencyField()
+
+
+class Player(BasePlayer):
+    # 游戏结束之后，我们需要关于玩家的数据
+    contribution = models.CurrencyField(
+        min=0,
+        max=Constants.endowment,
+        label="How much will you contribute?"
+    )
+    # 无需定义玩家在游戏结束的收益payoff，因为oTree中Player类已经包含了一个payoff字段
+
+
+class Contribute(Page):
+    form_model = 'player'
+    form_fields = ['contribution']
+
+
+class MyPage(Page):
+    form_model = 'player'
+    form_fields = ['name', 'age']
+
+
+class Results(Page):
+    pass
+
+
+class Stage1(Page):
+    form_model = 'player'
+    form_fields = ['a_price', 'a_sell', 'b_price', 'b_sell', 'c_price', 'c_sell']
+
+    # news = Constants.news_flow[player.round_number]
+    @staticmethod
+    def js_vars(player):
+        return dict(
+            round=player.round,
+
+        )
+
+    @staticmethod
+    def before_next_page(player, timeout_happened):
+        player.round = player.round + 1
+
+    @staticmethod
+    def vars_for_template(player):
+        a = player.round
+        return dict(
+            a=a + 1,
+        )
+
+
+# 当所有玩家都完成了Contribute页面，玩家的收益会被计算。添加一个group函数，
+def set_payoffs(group):
+    players = group.get_players()  # 获取组内所有玩家，list
+    contributions = [p.contribution for p in players]  # 获得每个玩家的贡献值
+    group.total_contribution = sum(contributions)  # 求和一波
+    group.individual_share = group.total_contribution * Constants.multiplier / Constants.players_per_group
+    for player in players:
+        player.payoff = Constants.endowment - player.contribution + group.individual_share
+
+
+# 当玩家选择了贡献值之后，并不能立刻看到结果页面；首先需要等待其他玩家选择贡献值。因此这里需要友谊WaitPage
+def set_payoffs(group: Group):
+    players = group.get_players()
+    contributions = [p.contribution for p in players]
+    group.total_contribution = sum(contributions)
+    group.individual_share = (
+        group.total_contribution * Constants.multiplier / Constants.players_per_group
+    )
+    for p in players:
+        p.payoff = Constants.endowment - p.contribution + group.individual_share
+
+
+class ResultWaitPage(Page):
+    # 设置为如下触发函数 set_payoffs
+    after_all_players_arrive = set_payoffs
+    pass
+
+
+page_sequence = [
+    Contribute,
+    ResultWaitPage,
+    Results
+]

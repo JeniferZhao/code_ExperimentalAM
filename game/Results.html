@@ -1,0 +1,23 @@
+{{ extends 'global/Page.html' }}
+{{ block title }}结果{{ endblock }}
+
+{{ block content }}
+<p>用户金钱：{{player.currency}}</p>
+<p>商品A</p>
+<p>出售价格：{{player.a_price}}</p>
+<p>市场价格：{{group.a_price}}</p>
+<p>熔断情况：{{group.a_fusing}}</p>
+
+<p>商品B</p>
+<p>出售价格：{{player.b_price}}</p>
+<p>市场价格：{{group.b_price}}</p>
+<p>熔断情况：{{group.b_fusing}}</p>
+
+<p>商品C</p>
+<p>出售价格：{{player.c_price}}</p>
+<p>市场价格：{{group.c_price}}</p>
+<p>熔断情况：{{group.c_fusing}}</p>
+
+{{ formfields }}
+{{ next_button }}
+{{ endblock }}
